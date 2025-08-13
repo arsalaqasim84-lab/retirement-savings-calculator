@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Calculate your retirement savings goals with our easy-to-use calculator. Plan your financial future today.">
+    <meta name="keywords" content="retirement, savings, calculator, financial planning, investment">
+    <title>Retirement Savings Calculator</title>
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header styles */
+        .app-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-header h1 {
+            color: #1e40af;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .app-header p {
+            color: #64748b;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* Main container */
+        .app-container {
+            display: flex;
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            gap: 2rem;
+        }
+
+        /* Sidebar for ads */
+        .ad-sidebar {
+            width: 300px;
+            flex-shrink: 0;
+        }
+
+        .ad-placeholder {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            color: #64748b;
+            font-weight: 500;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .ad-placeholder p {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .ad-placeholder small {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        /* Main content area */
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Calculator styles */
+        .retirement-calculator {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .calculator-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .calculator-section h2 {
+            color: #1e40af;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .input-group input {
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            color: #374151;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .input-group input:hover {
+            border-color: #10b981;
+        }
+
+        /* Button styles */
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+            box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(107, 114, 128, 0.4);
+        }
+
+        /* Results styles */
+        .results-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .results-section h2 {
+            color: #1e40af;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .results-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-card.primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-color: #10b981;
+        }
+
+        .result-card.primary h3 {
+            color: white;
+        }
+
+        .result-card h3 {
+            color: #374151;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .result-card .amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-card.primary .amount {
+            color: white;
+        }
+
+        .result-card p {
+            color: #6b7280;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .result-card.primary p {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Chart styles */
+        .chart-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .chart-section h2 {
+            color: #1e40af;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 16px;
+            padding: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            height: 400px;
+        }
+
+        /* Breakdown styles */
+        .breakdown-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .breakdown-section h2 {
+            color: #1e40af;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .breakdown-table {
+            overflow-x: auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .breakdown-table table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        .breakdown-table th,
+        .breakdown-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .breakdown-table th {
+            background: #f8fafc;
+            color: #374151;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .breakdown-table td {
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .breakdown-table tr:hover {
+            background: #f8fafc;
+        }
+
+        /* Footer */
+        .app-footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            text-align: center;
+            color: #64748b;
+            font-weight: 500;
+            margin-top: auto;
+        }
+
+        /* Ad placement below results */
+        .ad-below-results {
+            margin-top: 3rem;
+        }
+
+        .ad-below-results .ad-placeholder {
+            min-height: 200px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            .app-container {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            .ad-sidebar {
+                width: 100%;
+                order: 2;
+            }
+            
+            .main-content {
+                order: 1;
+            }
+            
+            .app-header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-header {
+                padding: 1.5rem 1rem;
+            }
+            
+            .app-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .app-header p {
+                font-size: 1rem;
+            }
+            
+            .app-container {
+                padding: 1rem 0.5rem;
+            }
+            
+            .ad-sidebar {
+                order: 3;
+            }
+            
+            .ad-below-results {
+                order: 4;
+            }
+            
+            .calculator-section,
+            .results-section,
+            .chart-section,
+            .breakdown-section {
+                padding: 1.5rem;
+                margin: 0 0.5rem;
+            }
+            
+            .input-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .results-summary {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .breakdown-table {
+                font-size: 0.9rem;
+            }
+            
+            .breakdown-table th,
+            .breakdown-table td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .app-container {
+                padding: 0.5rem;
+            }
+            
+            .calculator-section,
+            .results-section,
+            .chart-section,
+            .breakdown-section {
+                padding: 1rem;
+                margin: 0 0.25rem;
+            }
+            
+            .calculator-section h2,
+            .results-section h2,
+            .chart-section h2,
+            .breakdown-section h2 {
+                font-size: 1.5rem;
+            }
+            
+            .result-card .amount {
+                font-size: 1.5rem;
+            }
+            
+            .input-group input {
+                padding: 0.875rem;
+                font-size: 0.95rem;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <header class="app-header">
+            <h1>Retirement Savings Calculator</h1>
+            <p>Plan your financial future with confidence</p>
+        </header>
+        
+        <div class="app-container">
+            <!-- Ad placement area - sidebar -->
+            <aside class="ad-sidebar">
+                <div class="ad-placeholder">
+                    <p>Google AdSense</p>
+                    <small>Sidebar Placement</small>
+                </div>
+            </aside>
+            
+            <!-- Main calculator content -->
+            <main class="main-content">
+                <div class="retirement-calculator">
+                    <div class="calculator-section">
+                        <h2>Input Your Information</h2>
+                        <div class="input-grid">
+                            <div class="input-group">
+                                <label for="currentAge">Current Age</label>
+                                <input type="number" id="currentAge" value="30" min="18" max="100">
+                            </div>
+
+                            <div class="input-group">
+                                <label for="retirementAge">Retirement Age Goal</label>
+                                <input type="number" id="retirementAge" value="65" min="25" max="100">
+                            </div>
+
+                            <div class="input-group">
+                                <label for="currentSavings">Current Savings ($)</label>
+                                <input type="number" id="currentSavings" value="10000" min="0" step="1000">
+                            </div>
+
+                            <div class="input-group">
+                                <label for="monthlySavings">Monthly Savings ($)</label>
+                                <input type="number" id="monthlySavings" value="500" min="0" step="100">
+                            </div>
+
+                            <div class="input-group">
+                                <label for="annualReturn">Expected Annual Return (%)</label>
+                                <input type="number" id="annualReturn" value="7" min="0" max="20" step="0.1">
+                            </div>
+
+                            <div class="input-group">
+                                <label for="inflationRate">Inflation Rate (%)</label>
+                                <input type="number" id="inflationRate" value="2.5" min="0" max="10" step="0.1">
+                            </div>
+                        </div>
+
+                        <div class="button-group">
+                            <button onclick="resetForm()" class="btn btn-secondary">Reset</button>
+                        </div>
+                    </div>
+
+                    <div id="resultsSection" class="hidden">
+                        <div class="results-section">
+                            <h2>Your Retirement Projection</h2>
+                            
+                            <div class="results-summary">
+                                <div class="result-card primary">
+                                    <h3>Projected Savings at Retirement</h3>
+                                    <div class="amount" id="projectedSavings">$0</div>
+                                    <p id="retirementAgeText">At age 65</p>
+                                </div>
+
+                                <div class="result-card">
+                                    <h3>Total Contributions</h3>
+                                    <div class="amount" id="totalContributions">$0</div>
+                                    <p id="yearsText">Over 0 years</p>
+                                </div>
+
+                                <div class="result-card">
+                                    <h3>Investment Returns</h3>
+                                    <div class="amount" id="totalReturns">$0</div>
+                                    <p>Compound growth</p>
+                                </div>
+                            </div>
+
+                            <div class="button-group">
+                                <button onclick="shareResults()" class="btn btn-primary">Share Results</button>
+                            </div>
+                        </div>
+
+                        <div class="chart-section">
+                            <h2>Savings Growth Over Time</h2>
+                            <div class="chart-container">
+                                <canvas id="savingsChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="breakdown-section">
+                            <h2>Year-by-Year Breakdown</h2>
+                            <div class="breakdown-table">
+                                <table id="breakdownTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Age</th>
+                                            <th>Start Balance</th>
+                                            <th>Contributions</th>
+                                            <th>Returns</th>
+                                            <th>End Balance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="breakdownBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Ad placement area - below results -->
+                <div class="ad-below-results">
+                    <div class="ad-placeholder">
+                        <p>Google AdSense</p>
+                        <small>Below Results Placement</small>
+                    </div>
+                </div>
+            </main>
+        </div>
+        
+        <footer class="app-footer">
+            <p>&copy; 2024 Retirement Savings Calculator. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Global variables
+        let chart = null;
+        let currentResults = null;
+
+        // Get DOM elements
+        const inputs = {
+            currentAge: document.getElementById('currentAge'),
+            retirementAge: document.getElementById('retirementAge'),
+            currentSavings: document.getElementById('currentSavings'),
+            monthlySavings: document.getElementById('monthlySavings'),
+            annualReturn: document.getElementById('annualReturn'),
+            inflationRate: document.getElementById('inflationRate')
+        };
+
+        const resultsSection = document.getElementById('resultsSection');
+        const projectedSavings = document.getElementById('projectedSavings');
+        const totalContributions = document.getElementById('totalContributions');
+        const totalReturns = document.getElementById('totalReturns');
+        const retirementAgeText = document.getElementById('retirementAgeText');
+        const yearsText = document.getElementById('yearsText');
+        const breakdownBody = document.getElementById('breakdownBody');
+
+        // Add event listeners to all inputs
+        Object.values(inputs).forEach(input => {
+            input.addEventListener('input', calculateRetirement);
+        });
+
+        // Calculate retirement savings
+        function calculateRetirement() {
+            const currentAge = parseFloat(inputs.currentAge.value) || 0;
+            const retirementAge = parseFloat(inputs.retirementAge.value) || 0;
+            const currentSavings = parseFloat(inputs.currentSavings.value) || 0;
+            const monthlySavings = parseFloat(inputs.monthlySavings.value) || 0;
+            const annualReturn = parseFloat(inputs.annualReturn.value) || 0;
+            const inflationRate = parseFloat(inputs.inflationRate.value) || 0;
+
+            if (currentAge && retirementAge && currentSavings !== undefined) {
+                const yearsToRetirement = retirementAge - currentAge;
+                const monthlyReturn = annualReturn / 100 / 12;
+                const monthlyInflation = inflationRate / 100 / 12;
+
+                let projectedSavings = currentSavings;
+                const yearlyBreakdown = [];
+                const chartLabels = [];
+                const chartValues = [];
+
+                for (let year = 0; year <= yearsToRetirement; year++) {
+                    const yearStart = projectedSavings;
+                    
+                    // Calculate monthly contributions and returns for the year
+                    for (let month = 1; month <= 12; month++) {
+                        projectedSavings += monthlySavings;
+                        projectedSavings *= (1 + monthlyReturn);
+                        // Apply inflation adjustment
+                        projectedSavings *= (1 - monthlyInflation);
+                    }
+
+                    yearlyBreakdown.push({
+                        year: currentAge + year,
+                        startBalance: yearStart,
+                        endBalance: projectedSavings,
+                        contributions: monthlySavings * 12,
+                        returns: projectedSavings - yearStart - (monthlySavings * 12)
+                    });
+
+                    chartLabels.push(`Age ${currentAge + year}`);
+                    chartValues.push(Math.round(projectedSavings));
+                }
+
+                const totalContributionsAmount = monthlySavings * 12 * yearsToRetirement;
+                const totalReturnsAmount = projectedSavings - currentSavings - totalContributionsAmount;
+
+                // Store results
+                currentResults = {
+                    projectedSavings: Math.round(projectedSavings),
+                    totalContributions: totalContributionsAmount,
+                    totalReturns: totalReturnsAmount,
+                    yearlyBreakdown,
+                    yearsToRetirement
+                };
+
+                // Update UI
+                updateResults();
+                updateChart(chartLabels, chartValues);
+                updateBreakdownTable(yearlyBreakdown);
+                
+                // Show results
+                resultsSection.classList.remove('hidden');
+            }
+        }
+
+        // Update results display
+        function updateResults() {
+            if (!currentResults) return;
+            
+            projectedSavings.textContent = `$${currentResults.projectedSavings.toLocaleString()}`;
+            totalContributions.textContent = `$${currentResults.totalContributions.toLocaleString()}`;
+            totalReturns.textContent = `$${currentResults.totalReturns.toLocaleString()}`;
+            retirementAgeText.textContent = `At age ${inputs.retirementAge.value}`;
+            yearsText.textContent = `Over ${currentResults.yearsToRetirement} years`;
+        }
+
+        // Update chart
+        function updateChart(labels, values) {
+            const ctx = document.getElementById('savingsChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (chart) {
+                chart.destroy();
+            }
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Projected Savings',
+                        data: values,
+                        borderColor: 'rgb(34, 197, 94)',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        tension: 0.1,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Projected Savings Growth Over Time'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update breakdown table
+        function updateBreakdownTable(breakdown) {
+            breakdownBody.innerHTML = '';
+            
+            breakdown.forEach(year => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${year.year}</td>
+                    <td>$${year.startBalance.toLocaleString()}</td>
+                    <td>$${year.contributions.toLocaleString()}</td>
+                    <td>$${year.returns.toLocaleString()}</td>
+                    <td>$${year.endBalance.toLocaleString()}</td>
+                `;
+                breakdownBody.appendChild(row);
+            });
+        }
+
+        // Reset form
+        function resetForm() {
+            inputs.currentAge.value = 30;
+            inputs.retirementAge.value = 65;
+            inputs.currentSavings.value = 10000;
+            inputs.monthlySavings.value = 500;
+            inputs.annualReturn.value = 7;
+            inputs.inflationRate.value = 2.5;
+            
+            resultsSection.classList.add('hidden');
+            if (chart) {
+                chart.destroy();
+                chart = null;
+            }
+        }
+
+        // Share results
+        function shareResults() {
+            if (!currentResults) return;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My Retirement Savings Projection',
+                    text: `I'm projected to have $${currentResults.projectedSavings.toLocaleString()} at retirement! Check out this calculator: ${window.location.href}`,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback: copy to clipboard
+                const text = `My Retirement Projection: $${currentResults.projectedSavings.toLocaleString()} at age ${inputs.retirementAge.value}. Check out this calculator: ${window.location.href}`;
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Results copied to clipboard!');
+                }).catch(() => {
+                    alert('Unable to copy to clipboard. Please share manually.');
+                });
+            }
+        }
+
+        // Initialize calculator
+        calculateRetirement();
+    </script>
+</body>
+</html>
