@@ -153,7 +153,7 @@
             padding: 2rem;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 1rem; /* Reduced space below calculator section */
+            margin-bottom: 0.5rem; /* Minimal space below calculator section */
         }
 
         .calculator-section h2 {
@@ -365,7 +365,7 @@
             padding: 2rem;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 1.5rem; /* Reduced spacing after chart */
+            margin-bottom: 2rem; /* Consistent spacing: 32px */
         }
 
         .chart-section h2 {
@@ -389,7 +389,7 @@
 
         /* Financial Tip of the Day Section */
         .financial-tip-of-day {
-            margin: 1rem 0;
+            margin: 0.5rem 0; /* Minimal spacing for tight connection */
             padding: 1.5rem;
         }
 
@@ -444,7 +444,7 @@
             padding: 2rem;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            margin-top: 0.5rem; /* Reduced space above breakdown section */
+            margin-top: 2rem; /* Consistent spacing: 32px */
         }
 
         .breakdown-section h2 {
@@ -461,6 +461,18 @@
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
             border: 1px solid #e2e8f0;
+            max-width: 100%;
+        }
+
+        .breakdown-table table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px; /* Ensures horizontal scrolling on small screens */
+        }
+
+        .negative-returns {
+            color: #f59e0b; /* Amber color for negative returns */
+            font-weight: 500;
         }
 
         .breakdown-table table {
@@ -851,37 +863,37 @@
                         <div class="input-grid">
                             <div class="input-group">
                                 <label for="currentAge">Current Age</label>
-                                <input type="number" id="currentAge" value="30" min="18" max="100" aria-describedby="currentAgeHelp">
+                                <input type="number" id="currentAge" placeholder="Enter your age" min="18" max="100" aria-describedby="currentAgeHelp">
                                 <div id="currentAgeHelp" class="sr-only">Enter your current age between 18 and 100</div>
                             </div>
 
                             <div class="input-group">
                                 <label for="retirementAge">Retirement Age Goal</label>
-                                <input type="number" id="retirementAge" value="65" min="25" max="100" aria-describedby="retirementAgeHelp">
+                                <input type="number" id="retirementAge" placeholder="Enter retirement age" min="25" max="100" aria-describedby="retirementAgeHelp">
                                 <div id="retirementAgeHelp" class="sr-only">Enter your target retirement age between 25 and 100</div>
                             </div>
 
                             <div class="input-group">
                                 <label for="currentSavings">Current Savings ($)</label>
-                                <input type="number" id="currentSavings" value="10000" min="0" step="1000" aria-describedby="currentSavingsHelp">
+                                <input type="number" id="currentSavings" placeholder="Enter current savings" min="0" step="1000" aria-describedby="currentSavingsHelp">
                                 <div id="currentSavingsHelp" class="sr-only">Enter your current savings amount</div>
                             </div>
 
                             <div class="input-group">
                                 <label for="monthlySavings">Monthly Savings ($)</label>
-                                <input type="number" id="monthlySavings" value="500" min="0" step="100" aria-describedby="monthlySavingsHelp">
+                                <input type="number" id="monthlySavings" placeholder="Enter monthly savings" min="0" step="100" aria-describedby="monthlySavingsHelp">
                                 <div id="monthlySavingsHelp" class="sr-only">Enter how much you save each month</div>
                             </div>
 
                             <div class="input-group">
                                 <label for="annualReturn">Expected Annual Return (%)</label>
-                                <input type="number" id="annualReturn" value="7" min="0" max="20" step="0.1" aria-describedby="annualReturnHelp">
+                                <input type="number" id="annualReturn" placeholder="Enter return rate" min="0" max="20" step="0.1" aria-describedby="annualReturnHelp">
                                 <div id="annualReturnHelp" class="sr-only">Enter expected annual investment return percentage</div>
                             </div>
 
                             <div class="input-group">
                                 <label for="inflationRate">Inflation Rate (%)</label>
-                                <input type="number" id="inflationRate" value="2.5" min="0" max="10" step="0.1" aria-describedby="inflationRateHelp">
+                                <input type="number" id="inflationRate" placeholder="Enter inflation rate" min="0" max="10" step="0.1" aria-describedby="inflationRateHelp">
                                 <div id="inflationRateHelp" class="sr-only">Enter expected annual inflation rate percentage</div>
                             </div>
                         </div>
@@ -931,7 +943,7 @@
                                 </div>
 
                                 <div class="result-card">
-                                    <h3>Investment Returns</h3>
+                                    <h3>Inflation-adjusted Returns</h3>
                                     <div class="amount" id="totalReturns">$0</div>
                                     <p>Compound growth</p>
                                 </div>
@@ -987,11 +999,11 @@
 
         <footer class="app-footer">
             <div class="footer-content">
-                <p>&copy; 2024 Retirement Savings Calculator. All rights reserved.</p>
+                <p>&copy; 2025 Retirement Savings Calculator. All rights reserved.</p>
                 <div class="footer-links">
                     <a href="#privacy" onclick="showPrivacy()">Privacy Policy</a>
                     <a href="#disclaimer" onclick="showDisclaimer()">Disclaimer</a>
-                    <a href="mailto:support@example.com?subject=Retirement%20Calculator%20Support">Contact</a>
+                    <a href="mailto:arsalaqasim84@gmail.com?subject=Retirement%20Calculator%20Support">Contact</a>
                 </div>
             </div>
         </footer>
@@ -1246,7 +1258,17 @@
             
             projectedSavings.textContent = `$${currentResults.projectedSavings.toLocaleString()}`;
             totalContributions.textContent = `$${currentResults.totalContributions.toLocaleString()}`;
-            totalReturns.textContent = `$${currentResults.totalReturns.toLocaleString()}`;
+            
+            // Handle negative returns with special formatting
+            const returns = currentResults.totalReturns;
+            if (returns < 0) {
+                totalReturns.textContent = `($${Math.abs(returns).toLocaleString()})`;
+                totalReturns.style.color = '#f59e0b'; // Amber color for caution
+            } else {
+                totalReturns.textContent = `$${returns.toLocaleString()}`;
+                totalReturns.style.color = '#10b981'; // Reset to default green
+            }
+            
             retirementAgeText.textContent = `At age ${inputs.retirementAge.value}`;
             yearsText.textContent = `Over ${currentResults.yearsToRetirement} years`;
         }
@@ -1280,17 +1302,26 @@
             }
         }
 
-        // Update breakdown table
+        // Update breakdown table with proper formatting
         function updateBreakdownTable(breakdown) {
             breakdownBody.innerHTML = '';
             
             breakdown.forEach(year => {
                 const row = document.createElement('tr');
+                
+                // Format returns with special handling for negative values
+                let returnsDisplay = '';
+                if (year.returns < 0) {
+                    returnsDisplay = `($${Math.abs(year.returns).toLocaleString()})`;
+                } else {
+                    returnsDisplay = `$${year.returns.toLocaleString()}`;
+                }
+                
                 row.innerHTML = `
                     <td>${year.year}</td>
                     <td>$${year.startBalance.toLocaleString()}</td>
                     <td>$${year.contributions.toLocaleString()}</td>
-                    <td>$${year.returns.toLocaleString()}</td>
+                    <td class="${year.returns < 0 ? 'negative-returns' : ''}">${returnsDisplay}</td>
                     <td>$${year.endBalance.toLocaleString()}</td>
                 `;
                 breakdownBody.appendChild(row);
@@ -1302,12 +1333,13 @@
             // Change financial tip when resetting
             displayDailyTip();
             
-            inputs.currentAge.value = 30;
-            inputs.retirementAge.value = 65;
-            inputs.currentSavings.value = 10000;
-            inputs.monthlySavings.value = 500;
-            inputs.annualReturn.value = 7;
-            inputs.inflationRate.value = 2.5;
+            // Clear all input values
+            inputs.currentAge.value = '';
+            inputs.retirementAge.value = '';
+            inputs.currentSavings.value = '';
+            inputs.monthlySavings.value = '';
+            inputs.annualReturn.value = '';
+            inputs.inflationRate.value = '';
             
             resultsSection.classList.add('hidden');
             if (chart) {
@@ -1321,13 +1353,13 @@
             window.trackCalculatorEvent('calculator_reset');
         }
 
-        // Share results
+        // Share results with comprehensive data
         function shareResults() {
             if (!currentResults) return;
             
             const shareData = {
                 title: 'My Retirement Savings Projection',
-                text: `I'm projected to have $${currentResults.projectedSavings.toLocaleString()} at retirement! Check out this calculator: ${window.location.href}`,
+                text: `I'm projected to have $${currentResults.projectedSavings.toLocaleString()} at age ${inputs.retirementAge.value}! Check out this calculator: ${window.location.href}`,
                 url: window.location.href
             };
             
@@ -1376,6 +1408,7 @@
         checkReadyToCalculate();
         displayDailyTip(); // Display initial financial tip of the day
         startTipRotation(); // Start automatic tip rotation every 30 seconds
+        checkCookieConsent(); // Check if cookies were previously accepted
 
         // Cookie consent functions
         function showCookieConsent() {
@@ -1389,6 +1422,13 @@
             document.getElementById('cookieConsent').classList.add('hidden');
         }
 
+        // Check cookie consent on page load
+        function checkCookieConsent() {
+            if (localStorage.getItem('cookiesAccepted') === 'true') {
+                document.getElementById('cookieConsent').classList.add('hidden');
+            }
+        }
+
         // Legal modal functions
         function showPrivacy() {
             document.getElementById('modalTitle').textContent = 'Privacy Policy';
@@ -1396,7 +1436,7 @@
                 <h3>Privacy Policy</h3>
                 <p>We respect your privacy. This site does not collect personal information unless you choose to contact us. Anonymous usage data may be measured to improve the experience (e.g., page views).</p>
                 <p>If analytics is enabled, we do not sell or share your data. You can request removal of any information you intentionally provided by emailing us.</p>
-                <p><strong>Contact:</strong> <a href="mailto:support@example.com?subject=Privacy%20Request">support@example.com</a></p>
+                <p><strong>Contact:</strong> <a href="mailto:arsalaqasim84@gmail.com?subject=Privacy%20Request">arsalaqasim84@gmail.com</a></p>
             `;
             document.getElementById('legalModal').classList.remove('hidden');
         }
