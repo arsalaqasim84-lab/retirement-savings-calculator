@@ -9,7 +9,7 @@
     <meta name="keywords" content="retirement savings calculator, retirement calculator, retirement planning, investment calculator, compound interest calculator">
     <link rel="canonical" href="https://retirement-savings-calculator-kappa.vercel.app/">
     <meta name="robots" content="index, follow">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
     <!-- Open Graph -->
     <meta property="og:title" content="Retirement Savings Calculator – Free Online Financial Planning Tool">
@@ -231,6 +231,13 @@
             color: #374151;
             margin-bottom: 0.5rem;
             font-size: 0.95rem;
+        }
+
+        .input-help {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+            line-height: 1.4;
         }
 
         .input-group input {
@@ -892,6 +899,116 @@
             }
         }
 
+        /* Enhanced Mobile Optimizations */
+        @media (max-width: 768px) {
+            /* Hide purple sidebar on mobile */
+            .app::before {
+                display: none;
+            }
+            
+            /* Improve input field mobile experience */
+            .input-group input {
+                font-size: 16px; /* Prevents iOS zoom on focus */
+                padding: 1rem 0.875rem;
+                min-height: 48px; /* Better touch target */
+            }
+            
+            /* Better mobile button sizing */
+            .btn {
+                min-height: 48px;
+                font-size: 1rem;
+                padding: 1rem 1.5rem;
+            }
+            
+            /* Mobile-optimized grid */
+            .input-grid {
+                gap: 1.25rem;
+            }
+            
+            /* Better mobile spacing */
+            .calculator-section {
+                margin-bottom: 1rem;
+            }
+            
+            .financial-tip-of-day {
+                margin: 1rem 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            /* Extra small mobile optimizations */
+            .input-group input {
+                font-size: 16px;
+                padding: 0.875rem;
+                min-height: 44px;
+            }
+            
+            .btn {
+                min-height: 44px;
+                padding: 0.875rem 1.25rem;
+            }
+            
+            /* Compact mobile layout */
+            .calculator-section h2 {
+                margin-bottom: 1rem;
+            }
+            
+            .input-grid {
+                gap: 1rem;
+            }
+            
+            /* Better mobile card spacing */
+            .result-card {
+                padding: 1rem;
+            }
+            
+            .result-card .amount {
+                font-size: 1.25rem;
+            }
+        }
+
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .btn {
+                min-height: 48px;
+                padding: 1rem 1.5rem;
+            }
+            
+            .input-group input {
+                min-height: 48px;
+                padding: 1rem 0.875rem;
+            }
+            
+            .input-group label {
+                margin-bottom: 0.75rem;
+            }
+        }
+
+        /* Mobile input help text optimization */
+        @media (max-width: 768px) {
+            .input-help {
+                font-size: 0.8rem;
+                color: #6b7280;
+                margin-top: 0.375rem;
+                line-height: 1.3;
+            }
+            
+            .input-group {
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .input-help {
+                font-size: 0.75rem;
+                margin-top: 0.25rem;
+            }
+            
+            .input-group {
+                margin-bottom: 1.25rem;
+            }
+        }
+
         .hidden {
             display: none;
         }
@@ -914,37 +1031,37 @@
                             <div class="input-group">
                                 <label for="currentAge">Current Age</label>
                                 <input type="number" id="currentAge" placeholder="Enter your age" min="18" max="100" aria-describedby="currentAgeHelp">
-                                <div id="currentAgeHelp" class="sr-only">Enter your current age between 18 and 100</div>
+                                <div id="currentAgeHelp" class="input-help">Enter your current age between 18 and 100</div>
                             </div>
 
                             <div class="input-group">
                                 <label for="retirementAge">Retirement Age Goal</label>
                                 <input type="number" id="retirementAge" placeholder="Enter retirement age" min="25" max="100" aria-describedby="retirementAgeHelp">
-                                <div id="retirementAgeHelp" class="sr-only">Enter your target retirement age between 25 and 100</div>
+                                <div id="retirementAgeHelp" class="input-help">Enter your target retirement age between 25 and 100</div>
                             </div>
 
                             <div class="input-group">
                                 <label for="currentSavings">Current Savings ($)</label>
                                 <input type="number" id="currentSavings" placeholder="Enter current savings" min="0" step="1000" aria-describedby="currentSavingsHelp">
-                                <div id="currentSavingsHelp" class="sr-only">Enter your current savings amount</div>
+                                <div id="currentSavingsHelp" class="input-help">Enter your current savings amount</div>
                             </div>
 
                             <div class="input-group">
                                 <label for="monthlySavings">Monthly Savings ($)</label>
                                 <input type="number" id="monthlySavings" placeholder="Enter monthly savings" min="0" step="100" aria-describedby="monthlySavingsHelp">
-                                <div id="monthlySavingsHelp" class="sr-only">Enter how much you save each month</div>
+                                <div id="monthlySavingsHelp" class="input-help">Enter how much you save each month</div>
                             </div>
 
                             <div class="input-group">
                                 <label for="annualReturn">Expected Annual Return (%)</label>
                                 <input type="number" id="annualReturn" placeholder="Enter return rate" min="0" max="20" step="0.1" aria-describedby="annualReturnHelp">
-                                <div id="annualReturnHelp" class="sr-only">Enter expected annual investment return percentage</div>
+                                <div id="annualReturnHelp" class="input-help">Enter expected annual investment return percentage</div>
                             </div>
 
                             <div class="input-group">
                                 <label for="inflationRate">Inflation Rate (%)</label>
                                 <input type="number" id="inflationRate" placeholder="Enter inflation rate" min="0" max="10" step="0.1" aria-describedby="inflationRateHelp">
-                                <div id="inflationRateHelp" class="sr-only">Enter expected annual inflation rate percentage</div>
+                                <div id="inflationRateHelp" class="input-help">Enter expected annual inflation rate percentage</div>
                             </div>
                         </div>
 
@@ -1196,6 +1313,57 @@
             }, 30000); // 30 seconds = 30000 milliseconds
         }
 
+        // Safari-safe number formatting function
+        function safeFormatCurrency(amount) {
+            try {
+                // Check if number is valid and not too large
+                if (!isFinite(amount) || amount > Number.MAX_SAFE_INTEGER || amount < -Number.MAX_SAFE_INTEGER) {
+                    return '$0';
+                }
+                
+                // Safari-safe formatting with fallback
+                if (typeof amount.toLocaleString === 'function') {
+                    return amount.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0
+                    });
+                } else {
+                    // Fallback for older browsers
+                    return '$' + Math.round(amount).toLocaleString('en-US');
+                }
+            } catch (error) {
+                console.warn('Currency formatting failed:', error);
+                return '$0';
+            }
+        }
+
+        // Safari-safe calculation function
+        function safeCalculate(principal, rate, periods, contribution) {
+            try {
+                // Safety checks to prevent overflow
+                if (rate > 0.5 || periods > 1000 || !isFinite(principal) || !isFinite(rate) || !isFinite(periods)) {
+                    return principal;
+                }
+                
+                // Use more stable calculation method
+                let balance = principal;
+                for (let i = 0; i < periods; i++) {
+                    balance = balance * (1 + rate) + contribution;
+                    
+                    // Safety check for overflow
+                    if (!isFinite(balance) || balance > Number.MAX_SAFE_INTEGER) {
+                        return principal;
+                    }
+                }
+                return balance;
+            } catch (error) {
+                console.warn('Calculation failed:', error);
+                return principal;
+            }
+        }
+
         // Calculate retirement savings
         function calculateRetirement() {
             // Change financial tip when calculating
@@ -1239,8 +1407,10 @@
 
             if (currentAge && retirementAge && currentSavings !== undefined) {
                 const yearsToRetirement = retirementAge - currentAge;
-                const monthlyReturn = annualReturn / 100 / 12;
-                const monthlyInflation = inflationRate / 100 / 12;
+                
+                // Safari-safe monthly rate calculations
+                const monthlyReturn = Math.min(annualReturn / 100 / 12, 0.1); // Cap at 10% monthly
+                const monthlyInflation = Math.min(inflationRate / 100 / 12, 0.05); // Cap at 5% monthly
 
                 let projectedSavings = currentSavings;
                 const yearlyBreakdown = [];
@@ -1250,12 +1420,31 @@
                 for (let year = 0; year <= yearsToRetirement; year++) {
                     const yearStart = projectedSavings;
                     
-                    // Calculate monthly contributions and returns for the year
+                    // Safari-safe monthly calculations with overflow protection
                     for (let month = 1; month <= 12; month++) {
+                        // Add monthly contribution first
                         projectedSavings += monthlySavings;
-                        projectedSavings *= (1 + monthlyReturn);
-                        // Apply inflation adjustment
-                        projectedSavings *= (1 - monthlyInflation);
+                        
+                        // Apply return (with safety check)
+                        if (isFinite(projectedSavings) && projectedSavings > 0) {
+                            projectedSavings = projectedSavings * (1 + monthlyReturn);
+                        }
+                        
+                        // Apply inflation adjustment (with safety check)
+                        if (isFinite(projectedSavings) && projectedSavings > 0) {
+                            projectedSavings = projectedSavings * (1 - monthlyInflation);
+                        }
+                        
+                        // Overflow protection
+                        if (!isFinite(projectedSavings) || projectedSavings > Number.MAX_SAFE_INTEGER) {
+                            projectedSavings = yearStart; // Reset to safe value
+                            break;
+                        }
+                    }
+
+                    // Safety check for yearly values
+                    if (!isFinite(projectedSavings) || projectedSavings > Number.MAX_SAFE_INTEGER) {
+                        projectedSavings = yearStart;
                     }
 
                     yearlyBreakdown.push({
@@ -1272,6 +1461,11 @@
 
                 const totalContributions = monthlySavings * 12 * yearsToRetirement;
                 const totalReturns = projectedSavings - currentSavings - totalContributions;
+
+                // Final safety check
+                if (!isFinite(projectedSavings) || projectedSavings > Number.MAX_SAFE_INTEGER) {
+                    projectedSavings = currentSavings;
+                }
 
                 // Store results
                 currentResults = {
@@ -1309,16 +1503,17 @@
         function updateResults() {
             if (!currentResults) return;
             
-            projectedSavings.textContent = `$${currentResults.projectedSavings.toLocaleString()}`;
-            totalContributions.textContent = `$${currentResults.totalContributions.toLocaleString()}`;
+            // Use Safari-safe formatting for all currency values
+            projectedSavings.textContent = safeFormatCurrency(currentResults.projectedSavings);
+            totalContributions.textContent = safeFormatCurrency(currentResults.totalContributions);
             
             // Handle negative returns with special formatting
             const returns = currentResults.totalReturns;
             if (returns < 0) {
-                totalReturns.textContent = `($${Math.abs(returns).toLocaleString()})`;
+                totalReturns.textContent = `(${safeFormatCurrency(Math.abs(returns)).replace('$', '')})`;
                 totalReturns.style.color = '#f59e0b'; // Amber color for caution
             } else {
-                totalReturns.textContent = `$${returns.toLocaleString()}`;
+                totalReturns.textContent = safeFormatCurrency(returns);
                 totalReturns.style.color = '#10b981'; // Reset to default green
             }
             
@@ -1326,32 +1521,67 @@
             yearsText.textContent = `Over ${currentResults.yearsToRetirement} years`;
         }
 
-        // Update chart with lazy initialization
+        // Update chart with lazy initialization and Safari optimizations
         function updateChart(labels, values) {
-            if (!chart) {
-                // Lazy initialize chart only when first calculation is made
-                const ctx = document.getElementById('savingsChart').getContext('2d');
-                chart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Projected Savings',
-                            data: values,
-                            borderColor: '#10b981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.4
-                        }]
-                    },
-                    options: chartOptions
+            try {
+                // Safari-safe data validation
+                const safeValues = values.map(val => {
+                    if (!isFinite(val) || val > Number.MAX_SAFE_INTEGER || val < 0) {
+                        return 0; // Fallback for invalid values
+                    }
+                    return val;
                 });
-            } else {
-                // Update existing chart data for better performance
-                chart.data.labels = labels;
-                chart.data.datasets[0].data = values;
-                chart.update('none'); // Update without animation for better performance
+
+                if (!chart) {
+                    // Lazy initialize chart only when first calculation is made
+                    const ctx = document.getElementById('savingsChart').getContext('2d');
+                    chart = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Projected Savings',
+                                data: safeValues,
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            ...chartOptions,
+                            // Safari-specific optimizations
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            animation: {
+                                duration: 0 // Disable animations for better Safari performance
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return safeFormatCurrency(context.raw);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    // Update existing chart data for better performance
+                    chart.data.labels = labels;
+                    chart.data.datasets[0].data = safeValues;
+                    chart.update('none'); // Update without animation for better performance
+                }
+            } catch (error) {
+                console.warn('Chart update failed:', error);
+                // Fallback: destroy and recreate chart
+                if (chart) {
+                    chart.destroy();
+                    chart = null;
+                }
             }
         }
 
@@ -1362,20 +1592,20 @@
             breakdown.forEach(year => {
                 const row = document.createElement('tr');
                 
-                // Format returns with special handling for negative values
+                // Format returns with special handling for negative values using Safari-safe formatting
                 let returnsDisplay = '';
                 if (year.returns < 0) {
-                    returnsDisplay = `($${Math.abs(year.returns).toLocaleString()})`;
+                    returnsDisplay = `(${safeFormatCurrency(Math.abs(year.returns)).replace('$', '')})`;
                 } else {
-                    returnsDisplay = `$${year.returns.toLocaleString()}`;
+                    returnsDisplay = safeFormatCurrency(year.returns);
                 }
                 
                 row.innerHTML = `
                     <td>${year.year}</td>
-                    <td>$${year.startBalance.toLocaleString()}</td>
-                    <td>$${year.contributions.toLocaleString()}</td>
+                    <td>${safeFormatCurrency(year.startBalance)}</td>
+                    <td>${safeFormatCurrency(year.contributions)}</td>
                     <td class="${year.returns < 0 ? 'negative-returns' : ''}">${returnsDisplay}</td>
-                    <td>$${year.endBalance.toLocaleString()}</td>
+                    <td>${safeFormatCurrency(year.endBalance)}</td>
                 `;
                 breakdownBody.appendChild(row);
             });
@@ -1411,8 +1641,8 @@
             if (!currentResults) return;
             
             const shareData = {
-                title: 'My Retirement Savings Projection',
-                text: `I'm projected to have $${currentResults.projectedSavings.toLocaleString()} at age ${inputs.retirementAge.value}! Check out this calculator: ${window.location.href}`,
+                title: 'My Retirement Savings Calculator',
+                text: `I'm projected to have ${safeFormatCurrency(currentResults.projectedSavings)} at age ${inputs.retirementAge.value}! Check out this calculator: ${window.location.href}`,
                 url: window.location.href
             };
             

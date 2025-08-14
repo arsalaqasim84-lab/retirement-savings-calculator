@@ -38,8 +38,30 @@ ChartJS.register(
   Legend
 )
 
-const currencyFmt = (n, currency = 'USD') =>
-  new Intl.NumberFormat(undefined, { style: 'currency', currency, maximumFractionDigits: 0 }).format(n)
+const currencyFmt = (n, currency = 'USD') => {
+  try {
+    // Check if number is valid and not too large
+    if (!isFinite(n) || n > Number.MAX_SAFE_INTEGER || n < -Number.MAX_SAFE_INTEGER) {
+      return '$0';
+    }
+    
+    // Safari-safe formatting with fallback
+    if (typeof n.toLocaleString === 'function') {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(n);
+    } else {
+      // Fallback for older browsers
+      return '$' + Math.round(n).toLocaleString('en-US');
+    }
+  } catch (error) {
+    console.warn('Currency formatting failed:', error);
+    return '$0';
+  }
+}
 
 const num = (v, fallback = 0) => {
   const n = parseFloat(v)
@@ -91,22 +113,58 @@ const RetirementCalculator = () => {
     return ''
   }, [formData])
 
+  // Safari-safe calculation function
+  const safeCalculate = (principal, rate, periods, contribution) => {
+    try {
+      // Safety checks to prevent overflow
+      if (rate > 0.5 || periods > 1000 || !isFinite(principal) || !isFinite(rate) || !isFinite(periods)) {
+        return principal;
+      }
+      
+      // Use more stable calculation method
+      let balance = principal;
+      for (let i = 0; i < periods; i++) {
+        balance = balance * (1 + rate) + contribution;
+        
+        // Safety check for overflow
+        if (!isFinite(balance) || balance > Number.MAX_SAFE_INTEGER) {
+          return principal;
+        }
+      }
+      return balance;
+    } catch (error) {
+      console.warn('Calculation failed:', error);
+      return principal;
+    }
+  }
+
   const calculateRetirement = () => {
     const currentAge      = num(formData.currentAge)
     const retirementAge   = num(formData.retirementAge)
     const currentSavings  = num(formData.currentSavings)
     const monthlySavings  = num(formData.monthlySavings)
-    const annualReturn    = num(formData.annualReturn) / 100
-    const inflationRate   = num(formData.inflationRate) / 100
+    
+    // Safari-safe rate calculations with caps
+    const annualReturn    = Math.min(num(formData.annualReturn) / 100, 0.5) // Cap at 50%
+    const inflationRate   = Math.min(num(formData.inflationRate) / 100, 0.2) // Cap at 20%
     const currency        = formData.currency || 'USD'
 
     // years + months
     const yearsToRetirement = Math.max(0, retirementAge - currentAge)
     const months = yearsToRetirement * 12
 
-    // Real monthly rate (returns adjusted for inflation)
-    // exact: (1+r_real) = (1+r_nom)/(1+i)
-    const realMonthly = ((1 + annualReturn) / (1 + inflationRate)) ** (1/12) - 1
+    // Real monthly rate (returns adjusted for inflation) with safety checks
+    let realMonthly = 0
+    try {
+      if (inflationRate < 1 && annualReturn >= 0) {
+        realMonthly = ((1 + annualReturn) / (1 + inflationRate)) ** (1/12) - 1
+        // Safety cap on monthly rate
+        realMonthly = Math.min(Math.max(realMonthly, -0.1), 0.1) // Between -10% and +10%
+      }
+    } catch (error) {
+      console.warn('Rate calculation failed:', error)
+      realMonthly = 0
+    }
 
     let balance = currentSavings
     const yearlyBreakdown = []
@@ -114,19 +172,38 @@ const RetirementCalculator = () => {
     const points = []
 
     for (let y = 0; y <= yearsToRetirement; y++) {
-      const start = balance
-      // simulate 12 months in this year (skip inside for the last year=0 case still adds baseline)
+      const yearStart = balance
+      
+      // Safari-safe monthly calculations with overflow protection
       if (y > 0) {
         for (let m = 0; m < 12; m++) {
-          balance = balance * (1 + realMonthly) + monthlySavings
+          // Add monthly contribution first
+          balance += monthlySavings
+          
+          // Apply return with safety check
+          if (isFinite(balance) && balance > 0) {
+            balance = balance * (1 + realMonthly)
+          }
+          
+          // Overflow protection
+          if (!isFinite(balance) || balance > Number.MAX_SAFE_INTEGER) {
+            balance = yearStart // Reset to safe value
+            break
+          }
         }
       }
+      
+      // Safety check for yearly values
+      if (!isFinite(balance) || balance > Number.MAX_SAFE_INTEGER) {
+        balance = yearStart
+      }
+
       const contribThisYear = y === 0 ? 0 : monthlySavings * 12
-      const returnsThisYear = balance - start - contribThisYear
+      const returnsThisYear = balance - yearStart - contribThisYear
 
       yearlyBreakdown.push({
         year: currentAge + y,
-        startBalance: start,
+        startBalance: yearStart,
         contributions: contribThisYear,
         returns: returnsThisYear,
         endBalance: balance,
@@ -137,6 +214,11 @@ const RetirementCalculator = () => {
 
     const totalContributions = monthlySavings * 12 * yearsToRetirement
     const totalReturns = balance - currentSavings - totalContributions
+
+    // Final safety check
+    if (!isFinite(balance) || balance > Number.MAX_SAFE_INTEGER) {
+      balance = currentSavings
+    }
 
     // Track calculation event in Google Analytics
     trackEvent('Calculator', 'Calculate_Click', 'User calculated retirement savings')
