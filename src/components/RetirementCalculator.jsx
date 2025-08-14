@@ -13,6 +13,21 @@ import {
 import { trackCalculatorUsed, trackCalculatorReset, trackResultsShared } from '../config/analytics'
 import './RetirementCalculator.css'
 
+// Google Analytics event tracking helper function
+const trackEvent = (category, action, label) => {
+  try {
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', action, {
+        event_category: category,
+        event_label: label,
+      })
+    }
+  } catch (error) {
+    // Silently fail if GA is not available (e.g., during SSR)
+    console.warn('Google Analytics tracking failed:', error)
+  }
+}
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -123,6 +138,9 @@ const RetirementCalculator = () => {
     const totalContributions = monthlySavings * 12 * yearsToRetirement
     const totalReturns = balance - currentSavings - totalContributions
 
+    // Track calculation event in Google Analytics
+    trackEvent('Calculator', 'Calculate_Click', 'User calculated retirement savings')
+
     setResults({
       projectedSavings: Math.round(balance),
       totalContributions,
@@ -197,6 +215,12 @@ const RetirementCalculator = () => {
     
     // Track sharing event
     trackResultsShared(results.projectedSavings, num(formData.retirementAge))
+  }
+
+  // Handle affiliate link clicks with Google Analytics tracking
+  const handleAffiliateClick = (affiliateDescription) => {
+    trackEvent('Affiliate', 'Click', affiliateDescription)
+    // You can add additional affiliate logic here later
   }
 
   useEffect(() => {

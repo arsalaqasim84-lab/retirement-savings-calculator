@@ -55,6 +55,21 @@
             gtag('js', new Date());
             gtag('config', GA4_MEASUREMENT_ID);
             
+            // Google Analytics event tracking helper function
+            window.trackEvent = function(category, action, label) {
+                try {
+                    if (typeof window !== 'undefined' && window.gtag) {
+                        window.gtag('event', action, {
+                            event_category: category,
+                            event_label: label,
+                        });
+                    }
+                } catch (error) {
+                    // Silently fail if GA is not available
+                    console.warn('Google Analytics tracking failed:', error);
+                }
+            };
+            
             // Track calculator usage
             window.trackCalculatorEvent = function(eventName, parameters = {}) {
                 gtag('event', eventName, parameters);
@@ -65,7 +80,8 @@
                 showCookieConsent();
             });
         } else {
-            // No-op function when GA4 is disabled
+            // No-op functions when GA4 is disabled
+            window.trackEvent = function() {};
             window.trackCalculatorEvent = function() {};
         }
     </script>
@@ -1249,6 +1265,9 @@
                     retirement_age: retirementAge,
                     years_to_retirement: yearsToRetirement
                 });
+                
+                // Track calculation event in Google Analytics
+                window.trackEvent('Calculator', 'Calculate_Click', 'User calculated retirement savings');
             }
         }
 
@@ -1375,6 +1394,12 @@
 
             // Track share action
             window.trackCalculatorEvent('results_shared');
+        }
+
+        // Handle affiliate link clicks with Google Analytics tracking
+        function handleAffiliateClick(affiliateDescription) {
+            window.trackEvent('Affiliate', 'Click', affiliateDescription);
+            // You can add additional affiliate logic here later
         }
 
         // Copy to clipboard with toast notification
