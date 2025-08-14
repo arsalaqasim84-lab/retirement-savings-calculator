@@ -11,25 +11,9 @@ function App() {
       </header>
       
       <div className="app-container">
-        {/* Ad placement area - sidebar */}
-        <aside className="ad-sidebar">
-          <div className="ad-placeholder">
-            <p>Google AdSense</p>
-            <small>Sidebar Placement</small>
-          </div>
-        </aside>
-        
         {/* Main calculator content */}
         <main className="main-content">
           <RetirementCalculator />
-          
-          {/* Ad placement area - below results */}
-          <div className="ad-below-results">
-            <div className="ad-placeholder">
-              <p>Google AdSense</p>
-              <small>Below Results Placement</small>
-            </div>
-          </div>
         </main>
       </div>
       

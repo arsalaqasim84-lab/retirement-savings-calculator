@@ -10,6 +10,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js'
+import { trackCalculatorUsed, trackCalculatorReset, trackResultsShared } from '../config/analytics'
 import './RetirementCalculator.css'
 
 ChartJS.register(
@@ -44,11 +45,27 @@ const RetirementCalculator = () => {
   const [results, setResults] = useState(null)
   const [chartData, setChartData] = useState(null)
   const [error, setError] = useState('')
+  const [isReadyToCalculate, setIsReadyToCalculate] = useState(false)
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
   }
+
+  const checkReadyToCalculate = useMemo(() => {
+    const currentAge = num(formData.currentAge)
+    const retirementAge = num(formData.retirementAge)
+    const currentSavings = num(formData.currentSavings)
+    const monthlySavings = num(formData.monthlySavings)
+    const annualReturn = num(formData.annualReturn)
+    const inflationRate = num(formData.inflationRate)
+
+    return currentAge && retirementAge && currentSavings !== undefined && 
+           monthlySavings !== undefined && annualReturn !== undefined && 
+           inflationRate !== undefined && retirementAge > currentAge && 
+           currentAge >= 16 && retirementAge <= 100 && 
+           annualReturn >= 0 && inflationRate >= 0
+  }, [formData])
 
   const validate = useMemo(() => {
     const currentAge = num(formData.currentAge)
@@ -130,6 +147,25 @@ const RetirementCalculator = () => {
     })
   }
 
+  const handleCalculate = () => {
+    // Validate inputs first
+    if (validate) {
+      setError(validate)
+      setResults(null)
+      setChartData(null)
+      return
+    }
+    setError('')
+    calculateRetirement()
+    
+    // Track calculator usage
+    trackCalculatorUsed(
+      num(formData.currentAge),
+      num(formData.retirementAge),
+      num(formData.retirementAge) - num(formData.currentAge)
+    )
+  }
+
   const resetForm = () => {
     setFormData({
       currentAge: 30,
@@ -143,6 +179,9 @@ const RetirementCalculator = () => {
     setResults(null)
     setChartData(null)
     setError('')
+    
+    // Track reset event
+    trackCalculatorReset()
   }
 
   const shareResults = () => {
@@ -155,19 +194,25 @@ const RetirementCalculator = () => {
       navigator.clipboard.writeText(`${text} ${url}`)
       alert('Results copied to clipboard!')
     }
+    
+    // Track sharing event
+    trackResultsShared(results.projectedSavings, num(formData.retirementAge))
   }
 
   useEffect(() => {
-    if (validate) {
-      setError(validate)
+    setIsReadyToCalculate(checkReadyToCalculate)
+    
+    // Clear results when form data changes (user is typing)
+    if (results) {
       setResults(null)
       setChartData(null)
-      return
     }
     setError('')
-    calculateRetirement()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData, validate])
+  }, [formData, checkReadyToCalculate])
+
+  // Remove the automatic calculation useEffect
+  // Now calculations only happen when Calculate button is clicked
 
   const chartOptions = {
     responsive: true,
@@ -244,11 +289,39 @@ const RetirementCalculator = () => {
         </div>
 
         <div className="button-group">
+          <button onClick={handleCalculate} className="btn btn-primary" disabled={!isReadyToCalculate}>
+            {isReadyToCalculate ? 'Calculate' : 'Fill All Fields'}
+          </button>
           <button onClick={resetForm} className="btn btn-secondary">Reset</button>
           <button onClick={shareResults} className="btn btn-primary" disabled={!results}>Share Results</button>
         </div>
 
         {error && <div className="error">{error}</div>}
+        {!error && isReadyToCalculate && !results && (
+          <div className="status-message success">
+            Ready to calculate! Click the Calculate button.
+          </div>
+        )}
+        {!error && !isReadyToCalculate && (
+          <div className="status-message info">
+            Please fill in all fields with valid values to calculate.
+          </div>
+        )}
+
+        {/* Feedback Section */}
+        <div className="feedback-section">
+          <a 
+            href="mailto:feedback@example.com?subject=Retirement%20Savings%20Calculator%20Feedback" 
+            className="feedback-link" 
+            aria-label="Send feedback about this calculator"
+          >
+            <svg fill="currentColor" viewBox="0 0 20 20" width="16" height="16">
+              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+            </svg>
+            Send Feedback
+          </a>
+        </div>
       </div>
 
       {results && (
@@ -283,6 +356,12 @@ const RetirementCalculator = () => {
             )}
           </div>
 
+          {/* Ad placeholder between chart and breakdown */}
+          <div className="ad-between-sections">
+            <p>Ad space (coming soon)</p>
+            <small>Monetization placeholder</small>
+          </div>
+
           <div className="breakdown-section">
             <h2>Year-by-Year Breakdown</h2>
             <div className="breakdown-table">
@@ -312,6 +391,12 @@ const RetirementCalculator = () => {
           </div>
         </>
       )}
+
+      {/* Ad placeholder below results */}
+      <div className="ad-below-results">
+        <p>Ad space (coming soon)</p>
+        <small>Monetization placeholder</small>
+      </div>
     </div>
   )
 }

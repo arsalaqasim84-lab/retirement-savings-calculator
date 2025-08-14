@@ -10,6 +10,37 @@
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
+    <!-- Google Analytics 4 Configuration -->
+    <script>
+        // GA4 Configuration - Set to true to enable tracking
+        window.GA4_ENABLED = false; // Change to true to enable Google Analytics
+        
+        // GA4 Implementation
+        if (window.GA4_ENABLED) {
+            // Replace 'G-XXXXXXXXXX' with your actual GA4 Measurement ID
+            const GA4_MEASUREMENT_ID = 'G-XXXXXXXXXX';
+            
+            // Load GA4 script
+            const script = document.createElement('script');
+            script.async = true;
+            script.src = `https://www.googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID}`;
+            document.head.appendChild(script);
+            
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', GA4_MEASUREMENT_ID);
+            
+            // Track calculator usage
+            window.trackCalculatorEvent = function(eventName, parameters = {}) {
+                gtag('event', eventName, parameters);
+            };
+        } else {
+            // No-op function when GA4 is disabled
+            window.trackCalculatorEvent = function() {};
+        }
+    </script>
+    
     <style>
         /* Reset and base styles */
         * {
@@ -67,43 +98,10 @@
         /* Main container */
         .app-container {
             display: flex;
-            flex: 1;
-            max-width: 1400px;
+            flex-direction: column;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 2rem 1rem;
-            gap: 2rem;
-        }
-
-        /* Sidebar for ads */
-        .ad-sidebar {
-            width: 300px;
-            flex-shrink: 0;
-        }
-
-        .ad-placeholder {
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px dashed #cbd5e1;
-            border-radius: 12px;
-            padding: 2rem;
-            text-align: center;
-            color: #64748b;
-            font-weight: 500;
-            min-height: 400px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(10px);
-        }
-
-        .ad-placeholder p {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .ad-placeholder small {
-            font-size: 0.9rem;
-            opacity: 0.7;
         }
 
         /* Main content area */
@@ -182,6 +180,7 @@
             justify-content: center;
             gap: 1rem;
             flex-wrap: wrap;
+            margin-bottom: 1rem;
         }
 
         .btn {
@@ -203,7 +202,7 @@
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             transform: translateY(-3px);
             box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
         }
@@ -214,9 +213,40 @@
             box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
         }
 
-        .btn-secondary:hover {
+        .btn-secondary:hover:not(:disabled) {
             transform: translateY(-3px);
             box-shadow: 0 8px 25px rgba(107, 114, 128, 0.4);
+        }
+
+        /* Feedback button */
+        .feedback-section {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .feedback-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .feedback-link:hover {
+            color: #374151;
+            border-color: #10b981;
+            background: white;
+        }
+
+        .feedback-link svg {
+            width: 16px;
+            height: 16px;
         }
 
         /* Results styles */
@@ -324,6 +354,29 @@
             height: 400px;
         }
 
+        /* Ad placeholder between chart and breakdown */
+        .ad-between-sections {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            text-align: center;
+            color: #64748b;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .ad-between-sections p {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .ad-between-sections small {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
         /* Breakdown styles */
         .breakdown-section {
             background: rgba(255, 255, 255, 0.95);
@@ -392,29 +445,79 @@
             margin-top: auto;
         }
 
-        /* Ad placement below results */
+        /* Ad placeholder below results */
         .ad-below-results {
             margin-top: 3rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            text-align: center;
+            color: #64748b;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
         }
 
-        .ad-below-results .ad-placeholder {
-            min-height: 200px;
+        .ad-below-results p {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .ad-below-results small {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        /* Loading and Status Message Styles */
+        .status-message {
+            text-align: center;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: none;
+        }
+
+        .status-message.success {
+            background-color: #e1f3d8;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+            display: block;
+        }
+
+        .status-message.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+            display: block;
+        }
+
+        /* Button States */
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #e0e7ff;
+            transform: translateY(-2px);
         }
 
         /* Responsive design */
         @media (max-width: 1024px) {
             .app-container {
-                flex-direction: column;
                 padding: 1rem;
-            }
-            
-            .ad-sidebar {
-                width: 100%;
-                order: 2;
-            }
-            
-            .main-content {
-                order: 1;
             }
             
             .app-header h1 {
@@ -437,14 +540,6 @@
             
             .app-container {
                 padding: 1rem 0.5rem;
-            }
-            
-            .ad-sidebar {
-                order: 3;
-            }
-            
-            .ad-below-results {
-                order: 4;
             }
             
             .calculator-section,
@@ -532,14 +627,6 @@
         </header>
         
         <div class="app-container">
-            <!-- Ad placement area - sidebar -->
-            <aside class="ad-sidebar">
-                <div class="ad-placeholder">
-                    <p>Google AdSense</p>
-                    <small>Sidebar Placement</small>
-                </div>
-            </aside>
-            
             <!-- Main calculator content -->
             <main class="main-content">
                 <div class="retirement-calculator">
@@ -548,37 +635,57 @@
                         <div class="input-grid">
                             <div class="input-group">
                                 <label for="currentAge">Current Age</label>
-                                <input type="number" id="currentAge" value="30" min="18" max="100">
+                                <input type="number" id="currentAge" value="30" min="18" max="100" aria-describedby="currentAgeHelp">
+                                <div id="currentAgeHelp" class="sr-only">Enter your current age between 18 and 100</div>
                             </div>
 
                             <div class="input-group">
                                 <label for="retirementAge">Retirement Age Goal</label>
-                                <input type="number" id="retirementAge" value="65" min="25" max="100">
+                                <input type="number" id="retirementAge" value="65" min="25" max="100" aria-describedby="retirementAgeHelp">
+                                <div id="retirementAgeHelp" class="sr-only">Enter your target retirement age between 25 and 100</div>
                             </div>
 
                             <div class="input-group">
                                 <label for="currentSavings">Current Savings ($)</label>
-                                <input type="number" id="currentSavings" value="10000" min="0" step="1000">
+                                <input type="number" id="currentSavings" value="10000" min="0" step="1000" aria-describedby="currentSavingsHelp">
+                                <div id="currentSavingsHelp" class="sr-only">Enter your current savings amount</div>
                             </div>
 
                             <div class="input-group">
                                 <label for="monthlySavings">Monthly Savings ($)</label>
-                                <input type="number" id="monthlySavings" value="500" min="0" step="100">
+                                <input type="number" id="monthlySavings" value="500" min="0" step="100" aria-describedby="monthlySavingsHelp">
+                                <div id="monthlySavingsHelp" class="sr-only">Enter how much you save each month</div>
                             </div>
 
                             <div class="input-group">
                                 <label for="annualReturn">Expected Annual Return (%)</label>
-                                <input type="number" id="annualReturn" value="7" min="0" max="20" step="0.1">
+                                <input type="number" id="annualReturn" value="7" min="0" max="20" step="0.1" aria-describedby="annualReturnHelp">
+                                <div id="annualReturnHelp" class="sr-only">Enter expected annual investment return percentage</div>
                             </div>
 
                             <div class="input-group">
                                 <label for="inflationRate">Inflation Rate (%)</label>
-                                <input type="number" id="inflationRate" value="2.5" min="0" max="10" step="0.1">
+                                <input type="number" id="inflationRate" value="2.5" min="0" max="10" step="0.1" aria-describedby="inflationRateHelp">
+                                <div id="inflationRateHelp" class="sr-only">Enter expected annual inflation rate percentage</div>
                             </div>
                         </div>
 
                         <div class="button-group">
+                            <button onclick="calculateRetirement()" class="btn btn-primary" id="calculateBtn">Calculate</button>
                             <button onclick="resetForm()" class="btn btn-secondary">Reset</button>
+                        </div>
+                        
+                        <div id="statusMessage" class="status-message"></div>
+
+                        <!-- Feedback Section -->
+                        <div class="feedback-section">
+                            <a href="mailto:feedback@example.com?subject=Retirement%20Savings%20Calculator%20Feedback" class="feedback-link" aria-label="Send feedback about this calculator">
+                                <svg fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                                </svg>
+                                Send Feedback
+                            </a>
                         </div>
                     </div>
 
@@ -618,6 +725,12 @@
                             </div>
                         </div>
 
+                        <!-- Ad placeholder between chart and breakdown -->
+                        <div class="ad-between-sections">
+                            <p>Ad space (coming soon)</p>
+                            <small>Monetization placeholder</small>
+                        </div>
+
                         <div class="breakdown-section">
                             <h2>Year-by-Year Breakdown</h2>
                             <div class="breakdown-table">
@@ -639,12 +752,10 @@
                     </div>
                 </div>
                 
-                <!-- Ad placement area - below results -->
+                <!-- Ad placeholder below results -->
                 <div class="ad-below-results">
-                    <div class="ad-placeholder">
-                        <p>Google AdSense</p>
-                        <small>Below Results Placement</small>
-                    </div>
+                    <p>Ad space (coming soon)</p>
+                    <small>Monetization placeholder</small>
                 </div>
             </main>
         </div>
@@ -676,11 +787,54 @@
         const retirementAgeText = document.getElementById('retirementAgeText');
         const yearsText = document.getElementById('yearsText');
         const breakdownBody = document.getElementById('breakdownBody');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const statusMessage = document.getElementById('statusMessage');
 
         // Add event listeners to all inputs
         Object.values(inputs).forEach(input => {
-            input.addEventListener('input', calculateRetirement);
+            input.addEventListener('input', function() {
+                // Clear previous results when user starts typing
+                if (resultsSection.classList.contains('hidden') === false) {
+                    resultsSection.classList.add('hidden');
+                    if (chart) {
+                        chart.destroy();
+                        chart = null;
+                    }
+                }
+                
+                // Check if ready to calculate
+                checkReadyToCalculate();
+            });
         });
+
+        // Check if all fields are filled and ready to calculate
+        function checkReadyToCalculate() {
+            const currentAge = parseFloat(inputs.currentAge.value) || 0;
+            const retirementAge = parseFloat(inputs.retirementAge.value) || 0;
+            const currentSavings = parseFloat(inputs.currentSavings.value) || 0;
+            const monthlySavings = parseFloat(inputs.monthlySavings.value) || 0;
+            const annualReturn = parseFloat(inputs.annualReturn.value) || 0;
+            const inflationRate = parseFloat(inputs.inflationRate.value) || 0;
+
+            if (currentAge && retirementAge && currentSavings !== undefined && monthlySavings !== undefined && annualReturn !== undefined && inflationRate !== undefined) {
+                if (retirementAge > currentAge && currentAge >= 16 && retirementAge <= 100 && annualReturn >= 0 && inflationRate >= 0) {
+                    statusMessage.textContent = 'Ready to calculate! Click the Calculate button.';
+                    statusMessage.classList.add('success');
+                    statusMessage.classList.remove('error');
+                    calculateBtn.disabled = false;
+                } else {
+                    statusMessage.textContent = 'Please check your inputs.';
+                    statusMessage.classList.add('error');
+                    statusMessage.classList.remove('success');
+                    calculateBtn.disabled = true;
+                }
+            } else {
+                statusMessage.textContent = 'Please fill in all fields.';
+                statusMessage.classList.add('error');
+                statusMessage.classList.remove('success');
+                calculateBtn.disabled = true;
+            }
+        }
 
         // Calculate retirement savings
         function calculateRetirement() {
@@ -690,6 +844,35 @@
             const monthlySavings = parseFloat(inputs.monthlySavings.value) || 0;
             const annualReturn = parseFloat(inputs.annualReturn.value) || 0;
             const inflationRate = parseFloat(inputs.inflationRate.value) || 0;
+
+            // Clear previous status
+            statusMessage.textContent = '';
+            statusMessage.classList.remove('success', 'error');
+
+            // Validate inputs
+            if (!currentAge || !retirementAge || currentSavings === undefined || !monthlySavings || !annualReturn || inflationRate === undefined) {
+                statusMessage.textContent = 'Please fill in all required fields.';
+                statusMessage.classList.add('error');
+                return;
+            }
+
+            if (retirementAge <= currentAge) {
+                statusMessage.textContent = 'Retirement age must be greater than current age.';
+                statusMessage.classList.add('error');
+                return;
+            }
+
+            if (currentAge < 16 || retirementAge > 100) {
+                statusMessage.textContent = 'Please enter realistic ages (16-100).';
+                statusMessage.classList.add('error');
+                return;
+            }
+
+            if (annualReturn < 0 || inflationRate < 0) {
+                statusMessage.textContent = 'Rates cannot be negative.';
+                statusMessage.classList.add('error');
+                return;
+            }
 
             if (currentAge && retirementAge && currentSavings !== undefined) {
                 const yearsToRetirement = retirementAge - currentAge;
@@ -724,14 +907,14 @@
                     chartValues.push(Math.round(projectedSavings));
                 }
 
-                const totalContributionsAmount = monthlySavings * 12 * yearsToRetirement;
-                const totalReturnsAmount = projectedSavings - currentSavings - totalContributionsAmount;
+                const totalContributions = monthlySavings * 12 * yearsToRetirement;
+                const totalReturns = projectedSavings - currentSavings - totalContributions;
 
                 // Store results
                 currentResults = {
                     projectedSavings: Math.round(projectedSavings),
-                    totalContributions: totalContributionsAmount,
-                    totalReturns: totalReturnsAmount,
+                    totalContributions,
+                    totalReturns,
                     yearlyBreakdown,
                     yearsToRetirement
                 };
@@ -743,6 +926,16 @@
                 
                 // Show results
                 resultsSection.classList.remove('hidden');
+                statusMessage.textContent = 'Calculations complete!';
+                statusMessage.classList.add('success');
+                statusMessage.classList.remove('error');
+
+                // Track calculator usage
+                window.trackCalculatorEvent('calculator_used', {
+                    current_age: currentAge,
+                    retirement_age: retirementAge,
+                    years_to_retirement: yearsToRetirement
+                });
             }
         }
 
@@ -836,6 +1029,11 @@
                 chart.destroy();
                 chart = null;
             }
+            statusMessage.textContent = ''; // Clear status message on reset
+            statusMessage.classList.remove('success', 'error'); // Clear status classes
+
+            // Track reset action
+            window.trackCalculatorEvent('calculator_reset');
         }
 
         // Share results
@@ -857,10 +1055,42 @@
                     alert('Unable to copy to clipboard. Please share manually.');
                 });
             }
+
+            // Track share action
+            window.trackCalculatorEvent('results_shared');
         }
 
         // Initialize calculator
-        calculateRetirement();
+        checkReadyToCalculate();
     </script>
+
+    <!-- 
+    ========================================
+    FUTURE MONETIZATION - AD INSERTION POINTS
+    ========================================
+    
+    The following sections are prepared for future AdSense integration:
+    
+    1. AD BETWEEN SECTIONS (Chart and Breakdown)
+       - Class: ad-between-sections
+       - Location: Between chart and year-by-year breakdown
+       - Size: Responsive, adapts to container width
+       
+    2. AD BELOW RESULTS
+       - Class: ad-below-results  
+       - Location: Below all calculator results
+       - Size: Responsive, adapts to container width
+    
+    To add AdSense:
+    1. Replace the placeholder divs with your ad code
+    2. Ensure ad dimensions are responsive
+    3. Test on mobile and desktop
+    4. Update ad refresh rates as needed
+    
+    Example AdSense snippet:
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXX"></script>
+    <ins class="adsbygoogle ad-between-sections" style="display:block" data-ad-client="ca-pub-XXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    -->
 </body>
 </html>
