@@ -124,6 +124,7 @@
             padding: 2rem;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 1rem; /* Reduced space below calculator section */
         }
 
         .calculator-section h2 {
@@ -257,6 +258,7 @@
             padding: 2rem;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 1.5rem; /* Reduced space after results section */
         }
 
         .results-section h2 {
@@ -334,6 +336,7 @@
             padding: 2rem;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 1.5rem; /* Reduced spacing after chart */
         }
 
         .chart-section h2 {
@@ -354,27 +357,53 @@
             height: 400px;
         }
 
-        /* Ad placeholder between chart and breakdown */
-        .ad-between-sections {
-            margin: 2rem 0;
+        /* Financial Tip of the Day Section */
+        .financial-tip-of-day {
+            margin: 1rem 0;
             padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px dashed #cbd5e1;
-            border-radius: 12px;
+        }
+
+        .tip-card {
+            background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+            border-radius: 20px;
+            padding: 2.5rem;
             text-align: center;
-            color: #64748b;
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.15);
+            border: 2px solid #10b981;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tip-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #10b981, #059669, #047857);
+        }
+
+        .tip-card-title {
+            color: #065f46;
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .tip-card-content {
+            color: #064e3b;
+            font-size: 1.2rem;
             font-weight: 500;
-            backdrop-filter: blur(10px);
-        }
-
-        .ad-between-sections p {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .ad-between-sections small {
-            font-size: 0.9rem;
-            opacity: 0.7;
+            line-height: 1.7;
+            margin: 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         /* Breakdown styles */
@@ -385,6 +414,7 @@
             padding: 2rem;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 0.5rem; /* Reduced space above breakdown section */
         }
 
         .breakdown-section h2 {
@@ -445,28 +475,7 @@
             margin-top: auto;
         }
 
-        /* Ad placeholder below results */
-        .ad-below-results {
-            margin-top: 3rem;
-            padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px dashed #cbd5e1;
-            border-radius: 12px;
-            text-align: center;
-            color: #64748b;
-            font-weight: 500;
-            backdrop-filter: blur(10px);
-        }
 
-        .ad-below-results p {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .ad-below-results small {
-            font-size: 0.9rem;
-            opacity: 0.7;
-        }
 
         /* Loading and Status Message Styles */
         .status-message {
@@ -689,6 +698,14 @@
                         </div>
                     </div>
 
+                    <!-- Financial Tip of the Day Section - Always Visible -->
+                    <div class="financial-tip-of-day">
+                        <div class="tip-card">
+                            <h3 class="tip-card-title">💡 Financial Tip of the Day</h3>
+                            <p class="tip-card-content" id="daily-tip-content"></p>
+                        </div>
+                    </div>
+
                     <div id="resultsSection" class="hidden">
                         <div class="results-section">
                             <h2>Your Retirement Projection</h2>
@@ -725,12 +742,6 @@
                             </div>
                         </div>
 
-                        <!-- Ad placeholder between chart and breakdown -->
-                        <div class="ad-between-sections">
-                            <p>Ad space (coming soon)</p>
-                            <small>Monetization placeholder</small>
-                        </div>
-
                         <div class="breakdown-section">
                             <h2>Year-by-Year Breakdown</h2>
                             <div class="breakdown-table">
@@ -752,11 +763,7 @@
                     </div>
                 </div>
                 
-                <!-- Ad placeholder below results -->
-                <div class="ad-below-results">
-                    <p>Ad space (coming soon)</p>
-                    <small>Monetization placeholder</small>
-                </div>
+
             </main>
         </div>
         
@@ -769,6 +776,20 @@
         // Global variables
         let chart = null;
         let currentResults = null;
+
+        // Financial Tips Array
+        const financialTips = [
+            "Start saving at least 10% of your income each month.",
+            "Increase your savings rate by 1% every year.",
+            "Review your investment portfolio twice a year.",
+            "Automate your savings to stay consistent.",
+            "Avoid high-interest debt before focusing on investments.",
+            "Diversify your investments across different asset classes.",
+            "Take advantage of employer retirement plan matching.",
+            "Consider tax-advantaged accounts like IRAs and 401(k)s.",
+            "Build an emergency fund covering 3-6 months of expenses.",
+            "Don't try to time the market - focus on long-term investing."
+        ];
 
         // Get DOM elements
         const inputs = {
@@ -789,6 +810,7 @@
         const breakdownBody = document.getElementById('breakdownBody');
         const calculateBtn = document.getElementById('calculateBtn');
         const statusMessage = document.getElementById('statusMessage');
+        const dailyTipContent = document.getElementById('daily-tip-content');
 
         // Add event listeners to all inputs
         Object.values(inputs).forEach(input => {
@@ -836,8 +858,24 @@
             }
         }
 
+        // Display random financial tip
+        function displayDailyTip() {
+            const randomIndex = Math.floor(Math.random() * financialTips.length);
+            dailyTipContent.textContent = financialTips[randomIndex];
+        }
+
+        // Auto-change tip every 30 seconds
+        function startTipRotation() {
+            setInterval(() => {
+                displayDailyTip();
+            }, 30000); // 30 seconds = 30000 milliseconds
+        }
+
         // Calculate retirement savings
         function calculateRetirement() {
+            // Change financial tip when calculating
+            displayDailyTip();
+            
             const currentAge = parseFloat(inputs.currentAge.value) || 0;
             const retirementAge = parseFloat(inputs.retirementAge.value) || 0;
             const currentSavings = parseFloat(inputs.currentSavings.value) || 0;
@@ -1017,6 +1055,9 @@
 
         // Reset form
         function resetForm() {
+            // Change financial tip when resetting
+            displayDailyTip();
+            
             inputs.currentAge.value = 30;
             inputs.retirementAge.value = 65;
             inputs.currentSavings.value = 10000;
@@ -1062,6 +1103,8 @@
 
         // Initialize calculator
         checkReadyToCalculate();
+        displayDailyTip(); // Display initial financial tip of the day
+        startTipRotation(); // Start automatic tip rotation every 30 seconds
     </script>
 
     <!-- 
@@ -1071,15 +1114,14 @@
     
     The following sections are prepared for future AdSense integration:
     
-    1. AD BETWEEN SECTIONS (Chart and Breakdown)
-       - Class: ad-between-sections
+    1. AD BETWEEN SECTIONS (Chart and Breakdown) - REPLACED WITH FINANCIAL TIP OF THE DAY
+       - Class: financial-tip-of-day
        - Location: Between chart and year-by-year breakdown
        - Size: Responsive, adapts to container width
+       - Note: This area now displays helpful financial tips instead of ads
        
-    2. AD BELOW RESULTS
-       - Class: ad-below-results  
-       - Location: Below all calculator results
-       - Size: Responsive, adapts to container width
+    2. AD BELOW RESULTS - REMOVED
+       - Note: This area has been removed for a cleaner design
     
     To add AdSense:
     1. Replace the placeholder divs with your ad code
