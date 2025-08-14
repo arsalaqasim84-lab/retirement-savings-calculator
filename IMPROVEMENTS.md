@@ -115,3 +115,4 @@ export const GA4_MEASUREMENT_ID = 'G-XXXXXXXXXX';
 ---
 
 **Result**: A clean, professional, ad-free calculator that's ready for production use and future monetization!
+
