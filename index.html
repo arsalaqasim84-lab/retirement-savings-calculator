@@ -32,28 +32,28 @@
     
     <!-- Google Analytics 4 Configuration -->
     <script>
-        // GA4 Configuration - Only loads if VITE_GA_ID environment variable is set
-        window.GA4_ENABLED = false; // Will be set dynamically
+        // GA4 Configuration - Will be set by Vercel environment variable
+        window.GA4_ENABLED = false;
         window.GA4_MEASUREMENT_ID = null;
         
-        // Check for environment variable (for Vite builds)
-        if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_GA_ID) {
-            window.GA4_ENABLED = true;
-            window.GA4_MEASUREMENT_ID = import.meta.env.VITE_GA_ID;
-        }
+        // For Vercel deployment, we'll set this manually
+        // Replace 'G-XXXXXXXXXX' with your actual GA4 Measurement ID
+        const GA4_MEASUREMENT_ID = 'G-WW5DV0V20T'; // Your actual GA4 ID
         
-        // GA4 Implementation
-        if (window.GA4_ENABLED && window.GA4_MEASUREMENT_ID) {
+        if (GA4_MEASUREMENT_ID) {
+            window.GA4_ENABLED = true;
+            window.GA4_MEASUREMENT_ID = GA4_MEASUREMENT_ID;
+            
             // Load GA4 script
             const script = document.createElement('script');
             script.async = true;
-            script.src = `https://www.googletagmanager.com/gtag/js?id=${window.GA4_MEASUREMENT_ID}`;
+            script.src = `https://www.googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID}`;
             document.head.appendChild(script);
             
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', window.GA4_MEASUREMENT_ID);
+            gtag('config', GA4_MEASUREMENT_ID);
             
             // Track calculator usage
             window.trackCalculatorEvent = function(eventName, parameters = {}) {
